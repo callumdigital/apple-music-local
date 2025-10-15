@@ -4,7 +4,7 @@
     "audiosource"
   ],
   "requires": [],
-  "version": "0.11.4",
+  "version": "0.0.1",
   "requiredVersions": {
     "server": ">=0.0.0",
     "client": ">=0.11.2"
@@ -15,9 +15,9 @@
     "macarm",
     "macintel"
   ],
-  "repository": "https://github.com/callumhealey/apple-music-app",
-  "homepage": "https://github.com/callumhealey/apple-music-app",
-  "updateUrl": "https://github.com/callumhealey/apple-music-app/releases/latest/download/apple-music-local.zip",
+  "repository": "https://github.com/callumdigital/apple-music-local",
+  "homepage": "https://github.com/callumdigital/apple-music-local",
+  "updateUrl": "https://github.com/callumdigital/apple-music-local/releases/latest/download/apple-music-local-v0.0.1.zip",
   "id": "apple-music-local",
   "template": "full"
 }

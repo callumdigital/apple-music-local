@@ -1,16 +1,16 @@
 {
   "meta_version": "0.11.8",
   "meta_type": "app",
-  "repository": "https://github.com/callumhealey/apple-music-app",
+  "repository": "https://github.com/callumdigital/apple-music-local",
   "icon": "",
-  "size": 421685,
+  "size": 421683,
   "appManifest": {
     "label": "Apple Music Local",
     "tags": [
       "audiosource"
     ],
     "requires": [],
-    "version": "0.11.4",
+    "version": "0.0.1",
     "requiredVersions": {
       "server": ">=0.0.0",
       "client": ">=0.11.2"
@@ -21,16 +21,16 @@
       "macarm",
       "macintel"
     ],
-    "repository": "https://github.com/callumhealey/apple-music-app",
-    "homepage": "https://github.com/callumhealey/apple-music-app",
-    "updateUrl": "https://github.com/callumhealey/apple-music-app/releases/latest/download/apple-music-local.zip",
+    "repository": "https://github.com/callumdigital/apple-music-local",
+    "homepage": "https://github.com/callumdigital/apple-music-local",
+    "updateUrl": "https://github.com/callumdigital/apple-music-local/releases/latest/download/apple-music-local-v0.0.1.zip",
     "id": "apple-music-local",
     "template": "full"
   },
-  "updateUrl": "https://github.com/callumhealey/apple-music-app/releases/latest/download/apple-music-local-v0.11.4.zip",
-  "hash": "131de83c85ca2a5cae99333f885ed920326acc86aa42940bb01be96e4dfd216c23a23e93dad5333d67a17313ee0718c89b0bec66ed8e9802236106499d647f1c",
+  "updateUrl": "https://github.com/callumdigital/apple-music-local/releases/latest/download/apple-music-local-v0.0.1.zip",
+  "hash": "bde35ff5e57d6d6891719210debed560d920d15c6d8f453c0351b6e94c05d79d086529457ab8e05a167691ac8c36f77e877889bc184b9d0f516f13676b9649b9",
   "hashAlgorithm": "sha512",
-  "updatedAt": 1760492925985,
-  "createdAt": 1760492925985,
+  "updatedAt": 1760495267446,
+  "createdAt": 1760495267446,
   "downloads": 0
 }
