@@ -4,10 +4,10 @@
     "audiosource"
   ],
   "requires": [],
-  "version": "0.0.1",
+  "version": "0.0.2",
   "requiredVersions": {
     "server": ">=0.0.0",
-    "client": ">=0.11.2"
+    "client": ">=0.0.0"
   },
   "description": "Real-time Apple Music integration with dynamic album art and progress tracking",
   "author": "Callum",
@@ -17,7 +17,7 @@
   ],
   "repository": "https://github.com/callumdigital/apple-music-local",
   "homepage": "https://github.com/callumdigital/apple-music-local",
-  "updateUrl": "https://github.com/callumdigital/apple-music-local/releases/latest/download/apple-music-local-v0.0.1.zip",
+  "updateUrl": "https://github.com/callumdigital/apple-music-local/releases/latest/download/apple-music-local-v0.0.2-fixed.zip",
   "id": "apple-music-local",
   "template": "full"
 }

@@ -1,6 +1,5 @@
+import { DeskThing } from '@deskthing/server';
 import { execSync } from 'node:child_process';
-import { createServer } from 'node:http';
-import { parse } from 'node:url';
 import { readFileSync, existsSync, readdirSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 import { parseFile } from 'music-metadata';
@@ -52,8 +51,16 @@ class AppleMusicNowPlaying {
   private currentSong: SongData | null = null;
   private lastSongKey: string = '';
 
+  private log(message: string): void {
+    if (typeof DeskThing.sendLog === 'function') {
+      DeskThing.sendLog(message);
+    } else {
+      console.log(message);
+    }
+  }
+
   constructor() {
-    console.log('Custom Now Playing app started');
+    this.log('Custom Now Playing app started');
   }
 
   public start(): void {
@@ -71,7 +78,7 @@ class AppleMusicNowPlaying {
       clearInterval(this.positionIntervalId);
       this.positionIntervalId = null;
     }
-    console.log('Custom Now Playing app stopped');
+    this.log('Custom Now Playing app stopped');
   }
 
   private async checkForChanges(): Promise<void> {
@@ -87,12 +94,12 @@ class AppleMusicNowPlaying {
       
       // Log state changes for debugging
       if (hasStateChanged && this.currentSong) {
-        console.log(`🔄 State changed: ${this.currentSong.state} → ${basicSong.state}`);
+        this.log(`🔄 State changed: ${this.currentSong.state} → ${basicSong.state}`);
       }
 
       // If song changed, fetch album art and reset everything
       if (hasSongChanged) {
-        console.log('🎵 Song changed, fetching album art...');
+        this.log('🎵 Song changed, fetching album art...');
         this.lastSongKey = currentSongKey;
 
         const albumArt = await this.getAlbumArt();
@@ -120,7 +127,7 @@ class AppleMusicNowPlaying {
         }
       }
     } catch (error) {
-      console.log('Error checking changes:', error instanceof Error ? error.message : 'Unknown error');
+      this.log('Error checking changes: ' + (error instanceof Error ? error.message : 'Unknown error'));
     }
   }
 
@@ -138,7 +145,7 @@ class AppleMusicNowPlaying {
         this.lastSongKey = `${currentSong.artist}-${currentSong.title}-${currentSong.album}`;
       }
     } catch (error) {
-      console.log('Error sending current song:', error instanceof Error ? error.message : 'Unknown error');
+      this.log('Error sending current song: ' + (error instanceof Error ? error.message : 'Unknown error'));
     }
   }
 
@@ -284,39 +291,39 @@ class AppleMusicNowPlaying {
     // Tier 1: Try AppleScript artwork → base64
     const base64Art = await this.getAppleScriptArtworkBase64();
     if (base64Art) {
-      console.log('✅ AppleScript artwork found!');
+      this.log('✅ AppleScript artwork found!');
       return base64Art;
     }
 
     // Tier 2: Try iTunes API (most reliable for streaming music)
     const itunesArt = await this.getItunesArtwork();
     if (itunesArt) {
-      console.log('✅ iTunes artwork found!');
+      this.log('✅ iTunes artwork found!');
       return itunesArt;
     }
 
     // Tier 3: Try Last.fm API (comprehensive database)
     const lastfmArt = await this.getLastfmArtwork();
     if (lastfmArt) {
-      console.log('✅ Last.fm artwork found!');
+      this.log('✅ Last.fm artwork found!');
       return lastfmArt;
     }
 
     // Tier 4: Try music-metadata on local file
     const metadataArt = await this.getMetadataArtwork();
     if (metadataArt) {
-      console.log('✅ Metadata artwork found!');
+      this.log('✅ Metadata artwork found!');
       return metadataArt;
     }
 
     // Tier 5: Try cached artwork from Apple Music container
     const cachedArt = await this.getCachedArtwork();
     if (cachedArt) {
-      console.log('✅ Cached artwork found!');
+      this.log('✅ Cached artwork found!');
       return cachedArt;
     }
 
-    console.log('❌ No album art found');
+    this.log('❌ No album art found');
     return '';
   }
 
@@ -355,7 +362,7 @@ class AppleMusicNowPlaying {
       }
       return '';
     } catch (error) {
-      console.log('AppleScript artwork error:', error);
+      this.log('AppleScript artwork error: ' + (error instanceof Error ? error.message : 'Unknown error'));
       return '';
     }
   }
@@ -403,36 +410,36 @@ class AppleMusicNowPlaying {
       }
 
       // Fallback: Try to find any album by the same artist
-      console.log(`🎨 No exact match found, trying artist fallback for: ${artist}`);
+      this.log(`🎨 No exact match found, trying artist fallback for: ${artist}`);
       const artistUrl = `https://itunes.apple.com/search?term=${encodeURIComponent(artist)}&entity=album&limit=1`;
-      console.log(`🔍 Artist fallback URL: ${artistUrl}`);
+      this.log(`🔍 Artist fallback URL: ${artistUrl}`);
       const artistResponse = await fetch(artistUrl);
       
       if (artistResponse.ok) {
         const artistData = await artistResponse.json() as iTunesResponse;
-        console.log(`🔍 Artist fallback response: ${artistData.resultCount} results`);
+        this.log(`🔍 Artist fallback response: ${artistData.resultCount} results`);
         
         if (artistData.results && artistData.results.length > 0) {
           const result = artistData.results[0];
-          console.log(`🔍 Artist fallback result: ${result.artistName} - ${result.collectionName}`);
+          this.log(`🔍 Artist fallback result: ${result.artistName} - ${result.collectionName}`);
           const artworkUrl = result.artworkUrl100?.replace('100x100', '600x600');
           
           if (artworkUrl) {
-            console.log(`🔍 Artist fallback artwork URL: ${artworkUrl}`);
+            this.log(`🔍 Artist fallback artwork URL: ${artworkUrl}`);
             const imageResult = await this.fetchAndConvertImage(artworkUrl);
             if (imageResult) {
-              console.log(`🎨 Artist fallback artwork found for: ${artist}`);
+              this.log(`🎨 Artist fallback artwork found for: ${artist}`);
               return imageResult;
             }
           }
         }
       } else {
-        console.log(`❌ Artist fallback API error: ${artistResponse.status}`);
+        this.log(`❌ Artist fallback API error: ${artistResponse.status}`);
       }
 
       return '';
     } catch (error) {
-      console.log('iTunes artwork error:', error);
+      this.log('iTunes artwork error: ' + (error instanceof Error ? error.message : 'Unknown error'));
       return '';
     }
   }
@@ -462,7 +469,7 @@ class AppleMusicNowPlaying {
 
       for (const searchParams of searchStrategies) {
         const lastfmUrl = `https://ws.audioscrobbler.com/2.0/?method=album.getinfo&${searchParams}&api_key=${API_KEY}&format=json`;
-        console.log(`🔍 Last.fm search: ${searchParams}`);
+        this.log(`🔍 Last.fm search: ${searchParams}`);
         
         const response = await fetch(lastfmUrl, {
           headers: {
@@ -483,7 +490,7 @@ class AppleMusicNowPlaying {
             if (largeImage && largeImage['#text']) {
               const imageResult = await this.fetchAndConvertImage(largeImage['#text']);
               if (imageResult) {
-                console.log(`🎨 Last.fm artwork found: ${data.album.name} by ${data.album.artist}`);
+                this.log(`🎨 Last.fm artwork found: ${data.album.name} by ${data.album.artist}`);
                 return imageResult;
               }
             }
@@ -493,7 +500,7 @@ class AppleMusicNowPlaying {
 
       return '';
     } catch (error) {
-      console.log('Last.fm artwork error:', error);
+      this.log('Last.fm artwork error: ' + (error instanceof Error ? error.message : 'Unknown error'));
       return '';
     }
   }
@@ -527,7 +534,7 @@ class AppleMusicNowPlaying {
       }
       return '';
     } catch (error) {
-      console.log('Metadata artwork error:', error);
+      this.log('Metadata artwork error: ' + (error instanceof Error ? error.message : 'Unknown error'));
       return '';
     }
   }
@@ -556,7 +563,7 @@ class AppleMusicNowPlaying {
       }
       return '';
     } catch (error) {
-      console.log('Cached artwork error:', error);
+      this.log('Cached artwork error: ' + (error instanceof Error ? error.message : 'Unknown error'));
       return '';
     }
   }
@@ -572,7 +579,7 @@ class AppleMusicNowPlaying {
       }
       return '';
     } catch (error) {
-      console.log('Image fetch error:', error);
+      this.log('Image fetch error: ' + (error instanceof Error ? error.message : 'Unknown error'));
       return '';
     }
   }
@@ -636,7 +643,7 @@ class AppleMusicNowPlaying {
 
   private sendSongToDeskThing(song: SongData): void {
     try {
-      // Log the song data (in a real DeskThing app, this would send to DeskThing)
+      // Send to DeskThing instead of console.log
       const payload = {
         version: 2,
         title: song.title,
@@ -649,75 +656,34 @@ class AppleMusicNowPlaying {
         position: song.position
       };
 
-      console.log('🎵 Current Song:', JSON.stringify(payload, null, 2));
+      DeskThing.send({ type: 'currentSong', payload });
+      this.log('🎵 Current Song: ' + JSON.stringify(payload, null, 2));
     } catch (error) {
-      console.error('Error processing song data:', error);
+      this.log('Error processing song data: ' + (error instanceof Error ? error.message : 'Unknown error'));
     }
   }
 }
 
-// Create the app instance and start it
+// Create the app instance
 const app = new AppleMusicNowPlaying();
-app.start();
 
-// Create HTTP server to serve current song data
-const server = createServer((req, res) => {
-  const parsedUrl = parse(req.url || '', true);
-
-  // Enable CORS
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-
-  if (req.method === 'OPTIONS') {
-    res.writeHead(200);
-    res.end();
-    return;
-  }
-
-  if (parsedUrl.pathname === '/api/current-song') {
-    const currentSong = app.getCurrentSongData();
-    res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify(currentSong));
-  } else {
-    res.writeHead(404, { 'Content-Type': 'text/plain' });
-    res.end('Not Found');
-  }
-});
-
-const PORT = 3001;
-server.listen(PORT, () => {
+// DeskThing event handlers
+const startup = () => {
   console.log('🎵 Apple Music Now Playing server started!');
-  console.log(`📡 API server running at http://localhost:${PORT}/api/current-song`);
-  console.log('🔄 Event-driven updates every 2s, client-side progress simulation');
-  console.log('📱 Check the browser at http://localhost:5173 to see the UI');
-}).on('error', (err: any) => {
-  if (err.code === 'EADDRINUSE') {
-    console.log(`❌ Port ${PORT} is already in use. Trying to find an available port...`);
-    // Try to find an available port
-    const net = require('node:net');
-    const server2 = net.createServer();
-    server2.listen(0, () => {
-      const newPort = (server2.address() as any)?.port;
-      server2.close(() => {
-        console.log(`🔄 Starting server on port ${newPort} instead...`);
-        server.listen(newPort, () => {
-          console.log('🎵 Apple Music Now Playing server started!');
-          console.log(`📡 API server running at http://localhost:${newPort}/api/current-song`);
-          console.log('🔄 Event-driven updates every 2s, client-side progress simulation');
-          console.log('📱 Check the browser at http://localhost:5173 to see the UI');
-        });
-      });
-    });
-  } else {
-    console.error('Server error:', err);
-  }
-});
+  app.start();
+}
 
-// Handle graceful shutdown
-process.on('SIGINT', () => {
-  console.log('\n🛑 Shutting down gracefully...');
+const stop = () => {
+  console.log('🛑 Apple Music Now Playing server stopped');
   app.stop();
-  server.close();
-  process.exit(0);
-});
+}
+
+const purge = () => {
+  console.log('🧹 Apple Music Now Playing server purged');
+  app.stop();
+}
+
+// Register DeskThing event handlers
+DeskThing.on('start', startup);
+DeskThing.on('stop', stop);
+DeskThing.on('purge', purge);

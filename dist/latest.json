@@ -3,17 +3,17 @@
   "meta_type": "app",
   "repository": "https://github.com/callumdigital/apple-music-local",
   "icon": "",
-  "size": 421683,
+  "size": 458538,
   "appManifest": {
     "label": "Apple Music Local",
     "tags": [
       "audiosource"
     ],
     "requires": [],
-    "version": "0.0.1",
+    "version": "0.0.2",
     "requiredVersions": {
       "server": ">=0.0.0",
-      "client": ">=0.11.2"
+      "client": ">=0.0.0"
     },
     "description": "Real-time Apple Music integration with dynamic album art and progress tracking",
     "author": "Callum",
@@ -23,14 +23,14 @@
     ],
     "repository": "https://github.com/callumdigital/apple-music-local",
     "homepage": "https://github.com/callumdigital/apple-music-local",
-    "updateUrl": "https://github.com/callumdigital/apple-music-local/releases/latest/download/apple-music-local-v0.0.1.zip",
+    "updateUrl": "https://github.com/callumdigital/apple-music-local/releases/latest/download/apple-music-local-v0.0.2-fixed.zip",
     "id": "apple-music-local",
     "template": "full"
   },
-  "updateUrl": "https://github.com/callumdigital/apple-music-local/releases/latest/download/apple-music-local-v0.0.1.zip",
-  "hash": "bde35ff5e57d6d6891719210debed560d920d15c6d8f453c0351b6e94c05d79d086529457ab8e05a167691ac8c36f77e877889bc184b9d0f516f13676b9649b9",
+  "updateUrl": "https://github.com/callumdigital/apple-music-local/releases/latest/download/apple-music-local-v0.0.2.zip",
+  "hash": "95adedbaa3781a60009de8ace4d56f78818e11023cc42f370e0a487aeb1c15539acb1e18b4eb339f4acefe5f1cfa091e228dba7cdc543fa39b3270eadc7da79c",
   "hashAlgorithm": "sha512",
-  "updatedAt": 1760495267446,
-  "createdAt": 1760495267446,
+  "updatedAt": 1760497222434,
+  "createdAt": 1760497222434,
   "downloads": 0
 }

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { DeskThing } from '@deskthing/client';
 import ColorThief from 'colorthief';
 
 interface SongData {
@@ -63,64 +64,19 @@ const App: React.FC = () => {
   };
 
   useEffect(() => {
-    // Function to fetch current song from our API
-    const fetchCurrentSong = async () => {
-      try {
-        // Try multiple ports in case the server started on a different port
-        const ports = [3001, 3002, 3003, 3004, 3005];
-        let response: Response | null = null;
-        
-        for (const port of ports) {
-          try {
-            const testResponse = await fetch(`http://localhost:${port}/api/current-song`, {
-              signal: AbortSignal.timeout(1000) // 1 second timeout
-            });
-            if (testResponse.ok) {
-              response = testResponse;
-              break;
-            }
-          } catch (e) {
-            // Continue to next port
-            continue;
-          }
-        }
-        
-        if (response && response.ok) {
-          const songData = await response.json();
-          if (songData) {
-            console.log('🎵 Received song data:', {
-              title: songData.title,
-              artist: songData.artist,
-              state: songData.state,
-              position: songData.position,
-              duration: songData.duration
-            });
-            setCurrentSong(songData);
-            setIsLoading(false);
-          } else {
-            // No song playing
-            console.log('🎵 No song data received');
-            setCurrentSong(null);
-            setIsLoading(false);
-          }
-        } else {
-          console.error('Failed to fetch song data from any port');
-          setIsLoading(false);
-        }
-      } catch (error) {
-        console.error('Error fetching song data:', error);
-        setIsLoading(false);
-      }
+    // Handle incoming song data from DeskThing
+    const handleCurrentSong = (data: any) => {
+      console.log('🎵 Received song data:', data.payload);
+      setCurrentSong(data.payload);
+      setIsLoading(false);
     };
 
-    // Fetch initial data
-    fetchCurrentSong();
+    // Register the event listener
+    DeskThing.on('currentSong', handleCurrentSong);
 
-    // Set up polling every 2 seconds to get updates
-    const interval = setInterval(fetchCurrentSong, 2000);
-
+    // Cleanup function
     return () => {
-      clearInterval(interval);
+      DeskThing.off('currentSong', handleCurrentSong);
     };
   }, []);
 
