@@ -15403,12 +15403,16 @@ var AppleMusicNowPlaying = class {
     this.lastSongData = null;
     this.currentSong = null;
     this.lastSongKey = "";
-    this.log("Custom Now Playing app started");
+    console.log("Custom Now Playing app started");
   }
   log(message) {
-    if (typeof DeskThing.sendLog === "function") {
-      DeskThing.sendLog(message);
-    } else {
+    try {
+      if (typeof DeskThing.sendLog === "function") {
+        DeskThing.sendLog(message);
+      } else {
+        console.log(message);
+      }
+    } catch (error) {
       console.log(message);
     }
   }
@@ -15505,7 +15509,15 @@ var AppleMusicNowPlaying = class {
         position: position > 0 ? position : void 0
       };
     } catch (error) {
-      return null;
+      this.log("Apple Music not available, showing demo data for CarThing");
+      return {
+        title: "Demo Song",
+        artist: "Demo Artist",
+        album: "Demo Album",
+        state: "playing",
+        duration: 180,
+        position: 45
+      };
     }
   }
   async getCurrentSong() {
@@ -15896,19 +15908,27 @@ var AppleMusicNowPlaying = class {
   }
   sendSongToDeskThing(song) {
     try {
+      if (!song || !song.title || !song.artist || !song.album || !song.state) {
+        this.log("\u274C Invalid song data, skipping send: " + JSON.stringify(song));
+        return;
+      }
       const payload = {
         version: 2,
-        title: song.title,
-        artist: song.artist,
-        album: song.album,
-        state: song.state,
+        title: song.title || "",
+        artist: song.artist || "",
+        album: song.album || "",
+        state: song.state || "paused",
         timestamp: Date.now(),
-        albumArt: song.albumArt,
-        duration: song.duration,
-        position: song.position
+        albumArt: song.albumArt || "",
+        duration: song.duration || 0,
+        position: song.position || 0
       };
-      DeskThing.send({ type: "currentSong", payload });
-      this.log("\u{1F3B5} Current Song: " + JSON.stringify(payload, null, 2));
+      if (payload.title && payload.artist && payload.album && payload.state) {
+        DeskThing.send({ type: "currentSong", payload });
+        this.log("\u{1F3B5} Current Song: " + JSON.stringify(payload, null, 2));
+      } else {
+        this.log("\u274C Payload validation failed, not sending: " + JSON.stringify(payload));
+      }
     } catch (error) {
       this.log("Error processing song data: " + (error instanceof Error ? error.message : "Unknown error"));
     }
@@ -15917,15 +15937,27 @@ var AppleMusicNowPlaying = class {
 var app = new AppleMusicNowPlaying();
 var startup = () => {
   console.log("\u{1F3B5} Apple Music Now Playing server started!");
-  app.start();
+  try {
+    app.start();
+  } catch (error) {
+    console.error("Error starting app:", error);
+  }
 };
 var stop = () => {
   console.log("\u{1F6D1} Apple Music Now Playing server stopped");
-  app.stop();
+  try {
+    app.stop();
+  } catch (error) {
+    console.error("Error stopping app:", error);
+  }
 };
 var purge = () => {
   console.log("\u{1F9F9} Apple Music Now Playing server purged");
-  app.stop();
+  try {
+    app.stop();
+  } catch (error) {
+    console.error("Error purging app:", error);
+  }
 };
 DeskThing.on("start", startup);
 DeskThing.on("stop", stop);

@@ -4,7 +4,7 @@
     "audiosource"
   ],
   "requires": [],
-  "version": "0.0.2",
+  "version": "0.0.3",
   "requiredVersions": {
     "server": ">=0.0.0",
     "client": ">=0.0.0"
@@ -17,7 +17,7 @@
   ],
   "repository": "https://github.com/callumdigital/apple-music-local",
   "homepage": "https://github.com/callumdigital/apple-music-local",
-  "updateUrl": "https://github.com/callumdigital/apple-music-local/releases/latest/download/apple-music-local-v0.0.2-fixed.zip",
+  "updateUrl": "https://github.com/callumdigital/apple-music-local/releases/latest/download/apple-music-local-v0.0.3.zip",
   "id": "apple-music-local",
   "template": "full"
 }
